@@ -7,7 +7,7 @@ const Homepage = props => {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Currently in progress, we will be back!
+          Currently in progress, we will be back !
         </p>
       </header>
     </div>
