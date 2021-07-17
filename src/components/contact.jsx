@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import emailjs from 'emailjs-com'
+import keys from '../emailkey';
+
+const {SERVICE_ID,TEMPLATE_ID,USER_ID} = keys;
 
 const initialState = {
   name: '',
@@ -7,7 +10,7 @@ const initialState = {
   message: '',
 }
 export const Contact = (props) => {
-  const [{ name, email, message }, setState] = useState(initialState)
+  const [{ name, email, message, phone }, setState] = useState(initialState)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -17,21 +20,15 @@ export const Contact = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log(name, email, message)
-    emailjs
-      .sendForm(
-        'YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', e.target, 'YOUR_USER_ID'
-      )
-      .then(
-        (result) => {
-          console.log(result.text)
-          clearState()
-        },
-        (error) => {
-          console.log(error.text)
-        }
-      )
+    console.log("{ name, email, message, phone }",{ name, email, message, phone })
+    emailjs.send(SERVICE_ID,TEMPLATE_ID, {fullname:name,email,phone,message}, USER_ID)
+          .then((response) => {
+            console.log('SUCCESS!', response.status, response.text);
+          }, (err) => {
+            console.log('FAILED...', err);
+          });
   }
+
   return (
     <div>
       <div id='contact'>
