@@ -8,6 +8,7 @@ const initialState = {
   name: '',
   email: '',
   message: '',
+  phone: '',
 }
 export const Contact = (props) => {
   const [{ name, email, message, phone }, setState] = useState(initialState)
@@ -19,10 +20,10 @@ export const Contact = (props) => {
   const clearState = () => setState({ ...initialState })
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log("{ name, email, message, phone }",{ name, email, message, phone })
+    e.preventDefault();
     emailjs.send(SERVICE_ID,TEMPLATE_ID, {fullname:name,email,phone,message}, USER_ID)
           .then((response) => {
+            clearState();
             console.log('SUCCESS!', response.status, response.text);
           }, (err) => {
             console.log('FAILED...', err);
@@ -54,6 +55,7 @@ export const Contact = (props) => {
                         placeholder='Full Name'
                         required
                         onChange={handleChange}
+                        value={name}
                       />
                       <p className='help-block text-danger'></p>
                     </div>
@@ -68,6 +70,7 @@ export const Contact = (props) => {
                         placeholder='Email Address'
                         required
                         onChange={handleChange}
+                        value={email}
                       />
                       <p className='help-block text-danger'></p>
                     </div>
@@ -82,6 +85,7 @@ export const Contact = (props) => {
                         placeholder='Phone Number'
                         required
                         onChange={handleChange}
+                        value={phone}
                       />
                       <p className='help-block text-danger'></p>
                     </div>
@@ -97,6 +101,7 @@ export const Contact = (props) => {
                     placeholder='Message'
                     required
                     onChange={handleChange}
+                    value={message}
                   ></textarea>
                   <p className='help-block text-danger'></p>
                 </div>
