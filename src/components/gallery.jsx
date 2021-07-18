@@ -5,8 +5,7 @@ export const Gallery = (props) => {
         <div className='section-title'>
           <h2>Gallery</h2>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit duis sed
-            dapibus leonec.
+          Several recent projects our company has worked on are featured here.
           </p>
         </div>
         <div className='row'>
@@ -41,6 +40,7 @@ export const Gallery = (props) => {
                     title='Project Title'
                     data-lightbox-gallery='gallery1'
                     target='_blank'
+                    rel="noreferrer"
                   >
                     <div className='hover-text'>
                       <h4>RBC Chat Platform</h4>
@@ -63,6 +63,7 @@ export const Gallery = (props) => {
                     title='Project Title'
                     data-lightbox-gallery='gallery1'
                     target='_blank'
+                    rel="noreferrer"
                   >
                     <div className='hover-text'>
                       <h4>Scotia iTrade</h4>
@@ -79,15 +80,15 @@ export const Gallery = (props) => {
             <div className='col-sm-6 col-md-4 col-lg-4'>
               <div className='portfolio-item'>
                 <div className='hover-bg'>
-                  {' '}
                   <a
                     href='https://www.airmiles.ca/en.html'
                     title='Project Title'
                     data-lightbox-gallery='gallery1'
                     target='_blank'
+                    rel="noreferrer"
                   >
                     <div className='hover-text'>
-                      <h4>Loyality Program</h4>
+                      <h4>AriMiles Loyality Program</h4>
                     </div>
                     <img
                       src='img/portfolio/04-small.jpg'
@@ -101,33 +102,34 @@ export const Gallery = (props) => {
             <div className='col-sm-6 col-md-4 col-lg-4'>
               <div className='portfolio-item'>
                 <div className='hover-bg'>
-                  {' '}
                   <a
                     href='https://www.bmo.com/main/personal/credit-cards/all-cards/'
                     title='Project Title'
                     data-lightbox-gallery='gallery1'
                     target='_blank'
+                    rel="noreferrer"
                   >
                     <div className='hover-text'>
-                      <h4>Credit Card Application</h4>
+                      <h4>BMO Online Credit Card Application System</h4>
                     </div>
                     <img
                       src='img/portfolio/05-small.jpg'
                       className='img-responsive'
                       alt='Project Title'
-                    />{' '}
-                  </a>{' '}
+                    />
+                  </a>
                 </div>
               </div>
             </div>
             <div className='col-sm-6 col-md-4 col-lg-4'>
               <div className='portfolio-item'>
                 <div className='hover-bg'>
-                  {' '}
                   <a
                     href='https://www.pchealth.ca/'
                     title='Project Title'
                     data-lightbox-gallery='gallery1'
+                    target='_blank'
+                    rel="noreferrer"
                   >
                     <div className='hover-text'>
                       <h4>PC Health</h4>
@@ -136,61 +138,64 @@ export const Gallery = (props) => {
                       src='img/portfolio/06-small.jpg'
                       className='img-responsive'
                       alt='Project Title'
-                    />{' '}
-                  </a>{' '}
+                    />
+                  </a>
                 </div>
               </div>
             </div>
             <div className='col-sm-6 col-md-4 col-lg-4'>
               <div className='portfolio-item'>
                 <div className='hover-bg'>
-                  {' '}
                   <a
                     href='https://www.presidentschoice.ca/'
                     title='Project Title'
                     data-lightbox-gallery='gallery1'
+                    target='_blank'
+                    rel="noreferrer"
                   >
                     <div className='hover-text'>
-                      <h4>PC Choice</h4>
+                      <h4>Presidents Choice</h4>
                     </div>
                     <img
                       src='img/portfolio/07-small.jpg'
                       className='img-responsive'
                       alt='Project Title'
-                    />{' '}
-                  </a>{' '}
+                    />
+                  </a>
                 </div>
               </div>
             </div>
             <div className='col-sm-6 col-md-4 col-lg-4'>
               <div className='portfolio-item'>
                 <div className='hover-bg'>
-                  {' '}
                   <a
                     href='https://www.pcoptimum.ca/'
                     title='Project Title'
                     data-lightbox-gallery='gallery1'
+                    target='_blank'
+                    rel="noreferrer"
                   >
                     <div className='hover-text'>
-                      <h4>PC Optimum</h4>
+                      <h4>PC Optimum Points</h4>
                     </div>
                     <img
                       src='img/portfolio/08-small.jpg'
                       className='img-responsive'
                       alt='Project Title'
-                    />{' '}
-                  </a>{' '}
+                    />
+                  </a>
                 </div>
               </div>
             </div>
             <div className='col-sm-6 col-md-4 col-lg-4'>
               <div className='portfolio-item'>
                 <div className='hover-bg'>
-                  {' '}
                   <a
                     href='https://www.pcchildrenscharity.ca/'
                     title='Project Title'
                     data-lightbox-gallery='gallery1'
+                    target='_blank'
+                    rel="noreferrer"
                   >
                     <div className='hover-text'>
                       <h4>PC Children</h4>
