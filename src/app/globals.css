@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&family=Lato:wght@400;700&family=Open+Sans:wght@300;400;600;700&display=swap');
+
+:root {
+  --primary: #608dfd;
+  --secondary: #6372ff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  color: #666;
+  background: #fff;
+  font-size: 15px;
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Raleway', sans-serif;
+  color: #333;
+  font-weight: 700;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  color: var(--secondary);
+}
+
+.btn-primary {
+  @apply bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full font-semibold uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:scale-105;
+}
+
+.section-title {
+  @apply text-center mb-12;
+}
+
+.section-title h2 {
+  @apply text-3xl md:text-4xl font-bold mb-4 relative inline-block;
+}
+
+.section-title h2::after {
+  content: '';
+  @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-primary to-secondary;
+}
+
+.section-title p {
+  @apply text-gray-600 max-w-2xl mx-auto mt-4;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
