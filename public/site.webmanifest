@@ -1,0 +1,21 @@
+{
+  "name": "Stem Connect",
+  "short_name": "Stem Connect",
+  "description": "Canada's Premier Tech Recruiting Partner - Connecting exceptional talent with innovative companies in Toronto, GTA, and across Canada",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#d4ff00",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

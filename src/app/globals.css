@@ -2,66 +2,177 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&family=Lato:wght@400;700&family=Open+Sans:wght@300;400;600;700&display=swap');
+@layer base {
+  /* Base styles */
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-:root {
-  --primary: #608dfd;
-  --secondary: #6372ff;
+  body {
+    @apply bg-background text-foreground font-sans;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  /* Selection styling */
+  ::selection {
+    @apply bg-accent/30 text-foreground;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent/50 ring-offset-2 ring-offset-background;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold tracking-tight text-foreground;
+  }
+
+  /* Links */
+  a {
+    @apply transition-colors;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted;
+  }
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer components {
+  /* Text gradient utility */
+  .text-gradient {
+    @apply bg-gradient-to-r from-foreground via-accent to-foreground bg-clip-text text-transparent;
+    background-size: 200% auto;
+  }
+
+  /* Glow effect */
+  .glow {
+    box-shadow: 0 0 60px -15px theme('colors.accent');
+  }
+
+  /* Animated underline */
+  .animated-underline {
+    @apply relative;
+  }
+
+  .animated-underline::after {
+    content: '';
+    @apply absolute left-0 bottom-0 w-0 h-px bg-accent transition-all duration-300;
+  }
+
+  .animated-underline:hover::after {
+    @apply w-full;
+  }
+
+  /* Card hover effect */
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+
+  .card-hover:hover {
+    @apply -translate-y-1 shadow-xl;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Blob animation for hero */
+  .blob {
+    @apply absolute rounded-full blur-3xl opacity-20;
+    animation: blob 10s infinite;
+  }
+
+  @keyframes blob {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+  }
+
+  /* Marquee animation */
+  .marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Stagger children animation */
+  .stagger-children > * {
+    @apply opacity-0 translate-y-4;
+    animation: stagger-in 0.5s ease forwards;
+  }
+
+  .stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+  .stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+  .stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+  .stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+  .stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+  .stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
+
+  @keyframes stagger-in {
+    to {
+      @apply opacity-100 translate-y-0;
+    }
+  }
 }
 
-body {
-  font-family: 'Open Sans', sans-serif;
-  color: #666;
-  background: #fff;
-  font-size: 15px;
-  line-height: 1.8;
-  overflow-x: hidden;
-}
+@layer utilities {
+  /* Hide scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Raleway', sans-serif;
-  color: #333;
-  font-weight: 700;
-}
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 
-a {
-  color: var(--primary);
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
+  /* Text balance */
+  .text-balance {
+    text-wrap: balance;
+  }
 
-a:hover {
-  color: var(--secondary);
-}
+  /* Aspect ratios */
+  .aspect-card {
+    aspect-ratio: 4/3;
+  }
 
-.btn-primary {
-  @apply bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full font-semibold uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:scale-105;
-}
+  .aspect-portrait {
+    aspect-ratio: 3/4;
+  }
 
-.section-title {
-  @apply text-center mb-12;
-}
-
-.section-title h2 {
-  @apply text-3xl md:text-4xl font-bold mb-4 relative inline-block;
-}
-
-.section-title h2::after {
-  content: '';
-  @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-primary to-secondary;
-}
-
-.section-title p {
-  @apply text-gray-600 max-w-2xl mx-auto mt-4;
-}
-
-/* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
+  /* Border gradient */
+  .border-gradient {
+    border: 1px solid transparent;
+    background: linear-gradient(theme('colors.surface'), theme('colors.surface')) padding-box,
+                linear-gradient(135deg, theme('colors.accent/30'), transparent) border-box;
+  }
 }
