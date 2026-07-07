@@ -1,30 +1,26 @@
-'use client'
-
 import { cn } from '@/lib/utils'
-import { motion } from 'framer-motion'
 import Link from 'next/link'
 
 interface CardProps {
   children: React.ReactNode
   className?: string
   hover?: boolean
+  animate?: boolean
 }
 
-export function Card({ children, className, hover = false }: CardProps) {
+export function Card({ children, className, hover = false, animate = true }: CardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.4 }}
+    <div
       className={cn(
         'bg-surface border border-border rounded-card p-6',
-        hover && 'transition-all duration-300 hover:border-accent/30 hover:bg-surface-elevated',
+        animate && 'reveal',
+        hover &&
+          'transition-[border-color,background-color] duration-300 hover:border-border-strong hover:bg-surface-2',
         className
       )}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }
 
@@ -36,19 +32,14 @@ interface CardLinkProps {
 
 export function CardLink({ href, children, className }: CardLinkProps) {
   return (
-    <Link href={href} className="block group">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-50px' }}
-        transition={{ duration: 0.4 }}
-        className={cn(
-          'bg-surface border border-border rounded-card p-6 transition-all duration-300 hover:border-accent/30 hover:bg-surface-elevated',
-          className
-        )}
-      >
-        {children}
-      </motion.div>
+    <Link
+      href={href}
+      className={cn(
+        'reveal group block rounded-card border border-border bg-surface p-6 transition-[border-color,background-color] duration-300 hover:border-border-strong hover:bg-surface-2 focus:outline-none focus-visible:border-accent/60',
+        className
+      )}
+    >
+      {children}
     </Link>
   )
 }
@@ -59,5 +50,5 @@ interface CardContentProps {
 }
 
 export function CardContent({ children, className }: CardContentProps) {
-  return <div className={cn('', className)}>{children}</div>
+  return <div className={className}>{children}</div>
 }

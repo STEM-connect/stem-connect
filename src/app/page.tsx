@@ -1,357 +1,324 @@
 'use client'
 
-import { useRef } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, MapPin, Briefcase, DollarSign, Clock } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, MapPin, Clock } from 'lucide-react'
 import { Container } from '@/components/ui/container'
 import { Section } from '@/components/ui/section'
-import { Button, ButtonLink } from '@/components/ui/button'
+import { ButtonLink } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Divider } from '@/components/ui/divider'
+import { Label } from '@/components/ui/label'
+import { Stat } from '@/components/ui/stat'
+import { Reveal, Stagger, StaggerItem } from '@/components/ui/reveal'
+import { Marquee } from '@/components/ui/marquee'
+import { SpecialtyIcon } from '@/components/ui/specialty-icon'
 import { siteConfig, roles, specialties, testimonials } from '@/content'
-import { cn, formatSalary } from '@/lib/utils'
+import { formatSalary } from '@/lib/utils'
 
-// Animation variants
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-}
+const placing = [
+  'Staff Software Engineer', 'Product Lead', 'Design Systems Lead', 'ML Engineer',
+  'Head of Growth', 'Engineering Manager', 'Senior Product Designer', 'Data Scientist',
+  'VP Engineering', 'Revenue Operations', 'Frontend Architect', 'Head of Product',
+]
 
-const stagger = {
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-    },
+const paths = [
+  {
+    href: '/candidates',
+    label: 'For candidates',
+    title: 'Find the role you’d actually say yes to.',
+    body: 'Vetted, senior opportunities from teams worth your time. We represent you on craft — and keep the search confidential.',
+    cta: 'Explore candidates',
   },
-}
+  {
+    href: '/employers',
+    label: 'For employers',
+    title: 'Hire the person, not the résumé keyword.',
+    body: 'A shortlist of people who can actually do the job — usually inside a week. Boutique attention, backed by a real Canadian network.',
+    cta: 'Explore employers',
+  },
+]
 
 export default function HomePage() {
-  const heroRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ['start start', 'end start'],
-  })
-
-  const y = useTransform(scrollYProgress, [0, 1], [0, 150])
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
-
-  const featuredRoles = roles.filter((role) => role.featured).slice(0, 4)
+  const featuredRoles = roles.filter((r) => r.featured).slice(0, 4)
+  const [leadQuote, ...restQuotes] = testimonials
 
   return (
     <>
-      {/* Hero Section */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-        {/* Background elements */}
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.div
-            className="blob w-96 h-96 bg-accent/30 top-1/4 -left-48"
-            style={{ y }}
-          />
-          <motion.div
-            className="blob w-80 h-80 bg-accent/20 bottom-1/4 -right-40"
-            style={{ y: useTransform(scrollYProgress, [0, 1], [0, -100]) }}
-          />
-        </div>
-
-        <Container className="relative z-10">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={stagger}
-            className="max-w-4xl"
-          >
-            <motion.div variants={fadeIn} className="mb-6">
-              <Badge variant="accent" size="lg">
-                Canada&apos;s Premier Tech Recruiting Partner
-              </Badge>
-            </motion.div>
-
-            <motion.h1
-              variants={fadeIn}
-              className="text-display-2xl md:text-display-3xl lg:text-[5rem] font-display font-bold leading-[0.95] tracking-tight mb-8"
+      {/* ---------------------------------------------------------------- Hero */}
+      <section className="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
+        <div className="bg-grid mask-fade-b pointer-events-none absolute inset-0 opacity-60" aria-hidden />
+        <div
+          className="pointer-events-none absolute -right-40 -top-24 h-[36rem] w-[36rem] rounded-full opacity-[0.12] blur-[120px]"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 65%)' }}
+          aria-hidden
+        />
+        <Container className="relative">
+          <div className="max-w-4xl">
+            <Reveal y={12}>
+              <Label tick>Tech recruiting · Toronto → Canada</Label>
+            </Reveal>
+            <h1
+              className="rise-in mt-6 text-display-2xl text-ink text-balance"
             >
-              We connect{' '}
-              <span className="text-accent">exceptional talent</span>{' '}
-              with companies building the future
-            </motion.h1>
-
-            <motion.p
-              variants={fadeIn}
-              className="text-body-lg md:text-body-xl text-muted max-w-2xl mb-10"
+              The recruiter that
+              <br className="hidden sm:block" /> reads the{' '}
+              <span className="text-accent">code review</span>.
+            </h1>
+            <p
+              className="rise-in rise-in-d1 mt-7 max-w-xl text-body-lg text-muted text-pretty md:text-body-xl"
             >
-              {siteConfig.description}
-            </motion.p>
-
-            <motion.div
-              variants={fadeIn}
-              className="flex flex-col sm:flex-row gap-4"
+              Boutique tech recruiting across Canada. We place senior Product,
+              Design, Engineering, Data, and Go-to-Market talent &mdash; matched on
+              craft, not keyword.
+            </p>
+            <div
+              className="rise-in rise-in-d2 mt-9 flex flex-col gap-3 sm:flex-row"
             >
               <ButtonLink href="/roles" size="lg">
-                Browse Open Roles
-                <ArrowRight className="w-5 h-5" />
+                Browse open roles
+                <ArrowRight className="h-5 w-5" />
               </ButtonLink>
-              <ButtonLink href="/employers" variant="outline" size="lg">
-                For Employers
+              <ButtonLink href="/employers" variant="secondary" size="lg">
+                Hire with us
               </ButtonLink>
-            </motion.div>
-
-            {/* Metrics */}
-            <motion.div
-              variants={fadeIn}
-              className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-16 border-t border-border"
-            >
-              {siteConfig.metrics.map((metric) => (
-                <div key={metric.label}>
-                  <p className="text-display-lg md:text-display-xl font-display font-bold text-accent">
-                    {metric.value}
-                  </p>
-                  <p className="text-body-sm text-muted mt-1">{metric.label}</p>
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
-        </Container>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          style={{ opacity }}
-        >
-          <div className="w-6 h-10 rounded-full border-2 border-muted/30 flex items-start justify-center p-1.5">
-            <motion.div
-              className="w-1.5 h-2.5 bg-accent rounded-full"
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            />
+            </div>
           </div>
-        </motion.div>
+
+          {/* Stat row */}
+          <div
+            className="rise-in rise-in-d3 mt-16 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-border pt-10 md:mt-24 md:grid-cols-4"
+          >
+            {siteConfig.metrics.map((m, i) => (
+              <Stat key={m.label} value={m.value} label={m.label} accent={i === 0} />
+            ))}
+          </div>
+        </Container>
       </section>
 
-      {/* Featured Roles Section */}
-      <Section className="bg-surface">
+      {/* ---------------------------------------------------------------- Ticker */}
+      <div className="border-y border-border bg-surface/50 py-5">
+        <Marquee>
+          {placing.map((role) => (
+            <span
+              key={role}
+              className="flex items-center gap-3 text-body-sm text-muted"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />
+              {role}
+            </span>
+          ))}
+        </Marquee>
+      </div>
+
+      {/* ---------------------------------------------------------------- Two paths */}
+      <Section padding="default">
         <Container>
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-            <div>
-              <Badge variant="secondary" className="mb-4">Featured Opportunities</Badge>
-              <h2 className="text-display-lg md:text-display-xl font-display font-bold">
-                Hot roles right now
+          <div className="grid gap-px overflow-hidden rounded-card border border-border bg-border md:grid-cols-2">
+            {paths.map((p, i) => (
+              <Reveal
+                key={p.href}
+                delay={i * 0.08}
+                className="group relative flex flex-col bg-surface p-8 transition-colors hover:bg-surface-2 md:p-12"
+              >
+                <Label className="mb-8">{p.label}</Label>
+                <h2 className="text-display-md text-ink text-balance">{p.title}</h2>
+                <p className="mt-4 max-w-md text-body-md text-muted text-pretty">
+                  {p.body}
+                </p>
+                <Link
+                  href={p.href}
+                  className="mt-8 inline-flex items-center gap-2 text-body-sm font-semibold text-ink transition-colors group-hover:text-accent"
+                >
+                  {p.cta}
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <span className="absolute inset-0" aria-hidden />
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      {/* ---------------------------------------------------------------- Specialties */}
+      <Section background="surface" padding="default">
+        <Container>
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-xl">
+              <Label tick>Where we go deep</Label>
+              <h2 className="mt-4 text-display-md md:text-display-lg text-ink text-balance">
+                Five disciplines. One market we know cold.
               </h2>
             </div>
-            <ButtonLink href="/roles" variant="ghost">
+            <Link
+              href="/specialties"
+              className="link-underline shrink-0 text-body-sm font-semibold text-muted hover:text-ink"
+            >
+              All specialties &rarr;
+            </Link>
+          </div>
+
+          <div className="mt-12 divide-y divide-border border-y border-border">
+            {specialties.map((s, i) => (
+              <Reveal key={s.id} delay={i * 0.04}>
+                <Link
+                  href={`/specialties#${s.slug}`}
+                  className="group grid grid-cols-1 items-center gap-4 py-7 transition-colors md:grid-cols-12 md:gap-6"
+                >
+                  <div className="flex items-center gap-4 md:col-span-4">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-border bg-bg text-muted transition-colors group-hover:border-accent/50 group-hover:text-accent">
+                      <SpecialtyIcon name={s.icon} />
+                    </span>
+                    <span className="text-display-sm font-semibold text-ink transition-colors group-hover:text-accent">
+                      {s.name}
+                    </span>
+                  </div>
+                  <p className="text-body-md text-muted text-pretty md:col-span-5">
+                    {s.shortDescription}
+                  </p>
+                  <div className="flex items-center justify-between gap-6 md:col-span-3 md:justify-end">
+                    <div className="text-right">
+                      <div className="font-mono text-body-sm text-ink">
+                        {s.stats.rolesPlaced}
+                      </div>
+                      <div className="label-mono">placed</div>
+                    </div>
+                    <ArrowUpRight className="h-5 w-5 text-faint transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      {/* ---------------------------------------------------------------- Featured roles */}
+      <Section padding="default">
+        <Container>
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-xl">
+              <Label tick>Live search</Label>
+              <h2 className="mt-4 text-display-md md:text-display-lg text-ink text-balance">
+                Roles open right now.
+              </h2>
+            </div>
+            <ButtonLink href="/roles" variant="secondary" size="sm">
               View all roles
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="h-4 w-4" />
             </ButtonLink>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {featuredRoles.map((role, index) => (
-              <motion.div
-                key={role.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link href={`/roles/${role.slug}`}>
-                  <Card hover className="h-full">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between gap-4 mb-4">
-                        <div>
-                          <p className="text-body-sm text-accent font-medium mb-1">
-                            {role.company}
-                          </p>
-                          <h3 className="text-display-sm font-display font-semibold">
-                            {role.title}
-                          </h3>
-                        </div>
-                        {role.featured && (
-                          <Badge variant="accent" size="sm">Featured</Badge>
-                        )}
-                      </div>
-
-                      <div className="flex flex-wrap gap-4 text-body-sm text-muted mb-4">
-                        <span className="flex items-center gap-1.5">
-                          <MapPin className="w-4 h-4" />
-                          {role.location}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <Briefcase className="w-4 h-4" />
-                          {role.employmentType}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <DollarSign className="w-4 h-4" />
-                          {formatSalary(role.salaryMin, role.salaryMax)}
-                        </span>
-                      </div>
-
-                      <p className="text-body-md text-muted line-clamp-2 mb-4">
-                        {role.overview}
-                      </p>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-wrap gap-2">
-                          {role.tags.slice(0, 3).map((tag) => (
-                            <Badge key={tag} variant="secondary" size="sm">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                        <span className="flex items-center gap-1 text-body-sm text-muted">
-                          <Clock className="w-4 h-4" />
-                          {role.postedDate}
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </Container>
-      </Section>
-
-      {/* Specialties Section */}
-      <Section>
-        <Container>
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <Badge variant="secondary" className="mb-4">Our Focus</Badge>
-            <h2 className="text-display-lg md:text-display-xl font-display font-bold mb-4">
-              Deep expertise where it matters
-            </h2>
-            <p className="text-body-lg text-muted">
-              We specialize in placing talent across the core functions that drive growth at
-              Canada&apos;s most ambitious tech companies.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {specialties.map((specialty, index) => (
-              <motion.div
-                key={specialty.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link href={`/specialties#${specialty.slug}`}>
-                  <Card hover className="h-full group">
-                    <CardContent className="p-8">
-                      <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-colors">
-                        <span className="text-2xl">{specialty.icon}</span>
-                      </div>
-                      <h3 className="text-display-sm font-display font-semibold mb-3">
-                        {specialty.name}
+          <Stagger className="mt-12 grid gap-4 md:grid-cols-2">
+            {featuredRoles.map((role) => (
+              <StaggerItem key={role.id}>
+                <Link
+                  href={`/roles/${role.slug}`}
+                  className="group flex h-full flex-col rounded-card border border-border bg-surface p-6 transition-colors hover:border-border-strong hover:bg-surface-2"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="label-mono text-accent">{role.company}</div>
+                      <h3 className="mt-2 text-display-sm font-semibold text-ink">
+                        {role.title}
                       </h3>
-                      <p className="text-body-md text-muted mb-4">
-                        {specialty.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {specialty.roles.slice(0, 3).map((role) => (
-                          <Badge key={role} variant="secondary" size="sm">
-                            {role}
-                          </Badge>
-                        ))}
-                        {specialty.roles.length > 3 && (
-                          <Badge variant="secondary" size="sm">
-                            +{specialty.roles.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </Container>
-      </Section>
-
-      {/* Testimonials Section */}
-      <Section className="bg-surface overflow-hidden">
-        <Container>
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <Badge variant="secondary" className="mb-4">Testimonials</Badge>
-            <h2 className="text-display-lg md:text-display-xl font-display font-bold mb-4">
-              Trusted by Canada&apos;s best
-            </h2>
-            <p className="text-body-lg text-muted">
-              Don&apos;t just take our word for it. Here&apos;s what the people we&apos;ve worked
-              with have to say.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {testimonials.slice(0, 6).map((testimonial, index) => (
-              <motion.div
-                key={testimonial.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="h-full">
-                  <CardContent className="p-6">
-                    <Badge
-                      variant={testimonial.type === 'employer' ? 'accent' : 'secondary'}
-                      size="sm"
-                      className="mb-4"
-                    >
-                      {testimonial.type === 'employer' ? 'Employer' : 'Candidate'}
-                    </Badge>
-                    <blockquote className="text-body-md text-foreground mb-6">
-                      &ldquo;{testimonial.quote}&rdquo;
-                    </blockquote>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-                        <span className="text-body-sm font-medium text-accent">
-                          {testimonial.author.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-body-sm font-medium text-foreground">
-                          {testimonial.author}
-                        </p>
-                        <p className="text-body-xs text-muted">
-                          {testimonial.role} at {testimonial.company}
-                        </p>
-                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                    <ArrowUpRight className="h-5 w-5 shrink-0 text-faint transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />
+                  </div>
+                  <p className="mt-4 line-clamp-2 text-body-md text-muted text-pretty">
+                    {role.overview}
+                  </p>
+                  <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-body-sm text-muted">
+                    <span className="inline-flex items-center gap-1.5">
+                      <MapPin className="h-4 w-4" /> {role.location}
+                    </span>
+                    <span className="font-mono text-ink">
+                      {formatSalary(role.salaryMin, role.salaryMax)}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-faint">
+                      <Clock className="h-4 w-4" /> {role.postedDate}
+                    </span>
+                  </div>
+                </Link>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </Container>
       </Section>
 
-      {/* CTA Section */}
-      <Section>
+      {/* ---------------------------------------------------------------- Proof */}
+      <Section background="surface" padding="default">
         <Container>
-          <div className="relative rounded-2xl bg-gradient-to-br from-accent/10 via-surface to-surface border border-border overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-accent/20 via-transparent to-transparent" />
-            <div className="relative px-8 py-16 md:px-16 md:py-24">
-              <div className="max-w-2xl">
-                <h2 className="text-display-lg md:text-display-xl font-display font-bold mb-4">
-                  Ready to make your next move?
-                </h2>
-                <p className="text-body-lg text-muted mb-8">
-                  Whether you&apos;re looking for your next great hire or your next great role,
-                  we&apos;re here to help. Let&apos;s start a conversation.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <ButtonLink href="/contact" size="lg">
-                    Get in Touch
-                    <ArrowRight className="w-5 h-5" />
-                  </ButtonLink>
-                  <ButtonLink href="/roles" variant="outline" size="lg">
-                    Browse Roles
-                  </ButtonLink>
-                </div>
-              </div>
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-5">
+              <Label tick>Signal, not spray</Label>
+              <blockquote className="mt-6 text-display-md font-semibold text-ink text-balance">
+                &ldquo;{leadQuote.quote}&rdquo;
+              </blockquote>
+              <figcaption className="mt-8 flex items-center gap-3">
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-accent/12 font-mono text-body-sm text-accent ring-1 ring-inset ring-accent/25">
+                  {leadQuote.author.charAt(0)}
+                </span>
+                <span>
+                  <span className="block text-body-sm font-medium text-ink">
+                    {leadQuote.author}
+                  </span>
+                  <span className="block text-body-xs text-muted">
+                    {leadQuote.role}, {leadQuote.company}
+                  </span>
+                </span>
+              </figcaption>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:col-span-7">
+              {restQuotes.slice(0, 4).map((t, i) => (
+                <Reveal
+                  key={t.id}
+                  delay={i * 0.06}
+                  className="flex flex-col rounded-card border border-border bg-bg p-6"
+                >
+                  <Badge variant={t.type === 'employer' ? 'accent' : 'secondary'} size="sm">
+                    {t.type === 'employer' ? 'Employer' : 'Candidate'}
+                  </Badge>
+                  <p className="mt-4 text-body-sm text-muted text-pretty">
+                    &ldquo;{t.quote}&rdquo;
+                  </p>
+                  <p className="mt-5 text-body-xs text-faint">
+                    {t.author} &middot; {t.company}
+                  </p>
+                </Reveal>
+              ))}
             </div>
           </div>
+        </Container>
+      </Section>
+
+      {/* ---------------------------------------------------------------- CTA */}
+      <Section padding="default">
+        <Container>
+          <Reveal className="relative overflow-hidden rounded-card border border-border bg-surface px-6 py-16 md:px-16 md:py-24">
+            <div className="bg-grid mask-fade-b pointer-events-none absolute inset-0 opacity-40" aria-hidden />
+            <div
+              className="pointer-events-none absolute -bottom-32 -right-16 h-96 w-96 rounded-full opacity-[0.14] blur-[110px]"
+              style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 65%)' }}
+              aria-hidden
+            />
+            <div className="relative max-w-2xl">
+              <h2 className="text-display-lg text-ink text-balance">
+                Your next move deserves a real conversation.
+              </h2>
+              <p className="mt-5 text-body-lg text-muted text-pretty">
+                Hiring or looking &mdash; start with a call, not a form letter. We
+                reply to every serious inquiry within one business day.
+              </p>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <ButtonLink href="/contact" size="lg">
+                  Start a conversation
+                  <ArrowRight className="h-5 w-5" />
+                </ButtonLink>
+                <ButtonLink href="/roles" variant="secondary" size="lg">
+                  Browse roles
+                </ButtonLink>
+              </div>
+            </div>
+          </Reveal>
         </Container>
       </Section>
     </>

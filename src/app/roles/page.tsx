@@ -2,321 +2,294 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Search, MapPin, Briefcase, DollarSign, Clock, Filter, X, ChevronDown } from 'lucide-react'
+import { Search, MapPin, Briefcase, Clock, X, ArrowUpRight, Star } from 'lucide-react'
 import { Container } from '@/components/ui/container'
-import { Section } from '@/components/ui/section'
-import { Button } from '@/components/ui/button'
+import { Button, ButtonLink } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Select, SelectItem } from '@/components/ui/select'
-import { roles, specialties } from '@/content'
-import { cn, formatSalary } from '@/lib/utils'
-import type { Metadata } from 'next'
+import { Label } from '@/components/ui/label'
+import { Reveal } from '@/components/ui/reveal'
+import {
+  roles,
+  specialties,
+  getEmploymentTypeLabel,
+  getWorkModelLabel,
+  type EmploymentType,
+  type WorkModel,
+} from '@/content'
+import { cn, formatSalary, formatDateShort } from '@/lib/utils'
 
-const jobTypes = ['All Types', 'Full-time', 'Contract', 'Part-time']
-const locations = ['All Locations', 'Toronto', 'Remote', 'Hybrid']
+// Filter option lists derived from the data so they never drift out of sync.
+const employmentTypes = Array.from(
+  new Set(roles.map((r) => r.employmentType))
+) as EmploymentType[]
+const workModels = Array.from(
+  new Set(roles.map((r) => r.workModel))
+) as WorkModel[]
+
+function FilterChip({
+  active,
+  onClick,
+  primary = false,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  primary?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={cn(
+        'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-body-sm transition-colors',
+        primary
+          ? active
+            ? 'border-transparent bg-accent font-semibold text-accent-ink'
+            : 'border-border text-muted hover:border-border-strong hover:text-ink'
+          : active
+            ? 'border-border-strong bg-surface-2 font-medium text-ink'
+            : 'border-border text-muted hover:border-border-strong hover:text-ink'
+      )}
+    >
+      {children}
+    </button>
+  )
+}
 
 export default function RolesPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedSpecialty, setSelectedSpecialty] = useState('All Specialties')
-  const [selectedType, setSelectedType] = useState('All Types')
-  const [selectedLocation, setSelectedLocation] = useState('All Locations')
-  const [showFilters, setShowFilters] = useState(false)
+  const [specialty, setSpecialty] = useState('all')
+  const [employmentType, setEmploymentType] = useState('all')
+  const [workModel, setWorkModel] = useState('all')
 
   const filteredRoles = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase()
     return roles.filter((role) => {
       const matchesSearch =
-        searchQuery === '' ||
-        role.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        role.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        role.overview.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        role.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        q === '' ||
+        role.title.toLowerCase().includes(q) ||
+        role.company.toLowerCase().includes(q) ||
+        role.overview.toLowerCase().includes(q) ||
+        role.location.toLowerCase().includes(q) ||
+        role.tags.some((tag) => tag.toLowerCase().includes(q))
 
-      const matchesSpecialty =
-        selectedSpecialty === 'All Specialties' || role.specialty === selectedSpecialty
+      const matchesSpecialty = specialty === 'all' || role.specialty === specialty
+      const matchesType = employmentType === 'all' || role.employmentType === employmentType
+      const matchesWork = workModel === 'all' || role.workModel === workModel
 
-      const matchesType =
-        selectedType === 'All Types' || role.employmentType === selectedType
-
-      const matchesLocation =
-        selectedLocation === 'All Locations' ||
-        role.location.toLowerCase().includes(selectedLocation.toLowerCase())
-
-      return matchesSearch && matchesSpecialty && matchesType && matchesLocation
+      return matchesSearch && matchesSpecialty && matchesType && matchesWork
     })
-  }, [searchQuery, selectedSpecialty, selectedType, selectedLocation])
+  }, [searchQuery, specialty, employmentType, workModel])
 
-  const featuredRoles = roles.filter((role) => role.featured)
-  const activeFiltersCount = [selectedSpecialty, selectedType, selectedLocation]
-    .filter((f) => !f.startsWith('All')).length
+  const activeCount =
+    (specialty !== 'all' ? 1 : 0) +
+    (employmentType !== 'all' ? 1 : 0) +
+    (workModel !== 'all' ? 1 : 0) +
+    (searchQuery.trim() !== '' ? 1 : 0)
 
   const clearFilters = () => {
-    setSelectedSpecialty('All Specialties')
-    setSelectedType('All Types')
-    setSelectedLocation('All Locations')
     setSearchQuery('')
+    setSpecialty('all')
+    setEmploymentType('all')
+    setWorkModel('all')
   }
 
   return (
     <>
-      {/* Hero */}
-      <Section className="pt-32 pb-16 bg-surface">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl"
-          >
-            <Badge variant="accent" className="mb-4">
-              {roles.length} Open Positions
-            </Badge>
-            <h1 className="text-display-xl md:text-display-2xl font-display font-bold mb-4">
-              Find your next opportunity
+      {/* ---------------------------------------------------------------- Header */}
+      <section className="relative overflow-hidden pt-32 pb-12 md:pt-40 md:pb-16">
+        <div className="bg-grid mask-fade-b pointer-events-none absolute inset-0 opacity-60" aria-hidden />
+        <Container className="relative">
+          <div className="max-w-3xl">
+            <Reveal y={12}>
+              <Label tick>Live search · {roles.length} open roles</Label>
+            </Reveal>
+            <h1
+              className="rise-in mt-6 text-display-xl md:text-display-2xl text-ink text-balance"
+            >
+              Open roles across Canadian tech.
             </h1>
-            <p className="text-body-lg text-muted">
-              Browse our current openings at Toronto&apos;s most innovative companies. From
-              seed-stage startups to established scale-ups, we have roles for every stage of
-              your career.
+            <p
+              className="rise-in rise-in-d1 mt-6 max-w-xl text-body-lg text-muted text-pretty"
+            >
+              Senior mandates we&rsquo;re actively running &mdash; Product, Design,
+              Engineering, Data, and Go-to-Market. Every one is a real search with a
+              named hiring team, not a scraped listing.
             </p>
-          </motion.div>
+          </div>
         </Container>
-      </Section>
+      </section>
 
-      {/* Search and Filters */}
-      <Section className="py-8 border-b border-border sticky top-20 z-30 bg-background/95 backdrop-blur-md">
-        <Container>
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
-              <Input
-                type="text"
-                placeholder="Search roles, companies, or skills..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12"
-              />
+      {/* ---------------------------------------------------------------- Filter bar */}
+      <div className="sticky top-18 z-30 border-y border-border bg-bg/85 backdrop-blur-md">
+        <Container className="py-5">
+          <div className="flex flex-col gap-5">
+            {/* Search + count */}
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1">
+                <Search
+                  className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-faint"
+                  aria-hidden
+                />
+                <Input
+                  type="text"
+                  aria-label="Search roles"
+                  placeholder="Search roles, companies, skills…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-11"
+                />
+              </div>
+              <p className="hidden shrink-0 text-body-sm text-muted sm:block">
+                <span className="font-mono text-ink">{filteredRoles.length}</span>
+                <span className="text-faint"> / {roles.length}</span>
+              </p>
             </div>
 
-            {/* Desktop Filters */}
-            <div className="hidden lg:flex items-center gap-3">
-              <Select
-                value={selectedSpecialty}
-                onValueChange={setSelectedSpecialty}
-                className="w-44"
-              >
-                <SelectItem value="All Specialties">All Specialties</SelectItem>
-                {specialties.map((s) => (
-                  <SelectItem key={s.id} value={s.name}>
-                    {s.name}
-                  </SelectItem>
-                ))}
-              </Select>
+            {/* Specialty — the primary filter (lime = active) */}
+            <div className="scrollbar-hide -mx-1 flex items-center gap-2 overflow-x-auto px-1">
+              <FilterChip primary active={specialty === 'all'} onClick={() => setSpecialty('all')}>
+                All specialties
+              </FilterChip>
+              {specialties.map((s) => (
+                <FilterChip
+                  key={s.id}
+                  primary
+                  active={specialty === s.slug}
+                  onClick={() => setSpecialty(s.slug)}
+                >
+                  {s.name}
+                </FilterChip>
+              ))}
+            </div>
 
-              <Select
-                value={selectedType}
-                onValueChange={setSelectedType}
-                className="w-36"
-              >
-                {jobTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
+            {/* Refine — secondary filters + clear */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              <div className="flex items-center gap-2">
+                <span className="label-mono mr-1 text-faint">Type</span>
+                <FilterChip active={employmentType === 'all'} onClick={() => setEmploymentType('all')}>
+                  All
+                </FilterChip>
+                {employmentTypes.map((t) => (
+                  <FilterChip
+                    key={t}
+                    active={employmentType === t}
+                    onClick={() => setEmploymentType(t)}
+                  >
+                    {getEmploymentTypeLabel(t)}
+                  </FilterChip>
                 ))}
-              </Select>
+              </div>
 
-              <Select
-                value={selectedLocation}
-                onValueChange={setSelectedLocation}
-                className="w-36"
-              >
-                {locations.map((loc) => (
-                  <SelectItem key={loc} value={loc}>
-                    {loc}
-                  </SelectItem>
+              <div className="flex items-center gap-2">
+                <span className="label-mono mr-1 text-faint">Work</span>
+                <FilterChip active={workModel === 'all'} onClick={() => setWorkModel('all')}>
+                  All
+                </FilterChip>
+                {workModels.map((w) => (
+                  <FilterChip key={w} active={workModel === w} onClick={() => setWorkModel(w)}>
+                    {getWorkModelLabel(w)}
+                  </FilterChip>
                 ))}
-              </Select>
+              </div>
 
-              {activeFiltersCount > 0 && (
-                <Button variant="ghost" size="sm" onClick={clearFilters}>
-                  Clear ({activeFiltersCount})
-                  <X className="w-4 h-4" />
+              {activeCount > 0 && (
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="ml-auto">
+                  Clear{' '}
+                  <span className="font-mono text-faint">({activeCount})</span>
+                  <X className="h-4 w-4" />
                 </Button>
               )}
             </div>
-
-            {/* Mobile Filter Toggle */}
-            <Button
-              variant="outline"
-              className="lg:hidden"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="w-4 h-4" />
-              Filters
-              {activeFiltersCount > 0 && (
-                <Badge variant="accent" size="sm" className="ml-2">
-                  {activeFiltersCount}
-                </Badge>
-              )}
-            </Button>
           </div>
-
-          {/* Mobile Filters Panel */}
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="lg:hidden overflow-hidden"
-              >
-                <div className="grid grid-cols-2 gap-3 pt-4">
-                  <Select
-                    value={selectedSpecialty}
-                    onValueChange={setSelectedSpecialty}
-                    label="Specialty"
-                  >
-                    <SelectItem value="All Specialties">All Specialties</SelectItem>
-                    {specialties.map((s) => (
-                      <SelectItem key={s.id} value={s.name}>
-                        {s.name}
-                      </SelectItem>
-                    ))}
-                  </Select>
-
-                  <Select
-                    value={selectedType}
-                    onValueChange={setSelectedType}
-                    label="Job Type"
-                  >
-                    {jobTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </Select>
-
-                  <Select
-                    value={selectedLocation}
-                    onValueChange={setSelectedLocation}
-                    label="Location"
-                  >
-                    {locations.map((loc) => (
-                      <SelectItem key={loc} value={loc}>
-                        {loc}
-                      </SelectItem>
-                    ))}
-                  </Select>
-
-                </div>
-
-                {activeFiltersCount > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearFilters}
-                    className="mt-4"
-                  >
-                    Clear all filters
-                    <X className="w-4 h-4" />
-                  </Button>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
         </Container>
-      </Section>
+      </div>
 
-      {/* Results */}
-      <Section>
+      {/* ---------------------------------------------------------------- Results */}
+      <section className="py-section-sm">
         <Container>
-          {/* Results count */}
-          <div className="flex items-center justify-between mb-8">
-            <p className="text-body-md text-muted">
-              Showing <span className="text-foreground font-medium">{filteredRoles.length}</span>{' '}
-              {filteredRoles.length === 1 ? 'role' : 'roles'}
-            </p>
-          </div>
-
-          {/* Roles Grid */}
           {filteredRoles.length > 0 ? (
             <div className="grid gap-4">
-              {filteredRoles.map((role, index) => (
-                <motion.div
+              {filteredRoles.map((role) => (
+                <Link
                   key={role.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  href={`/roles/${role.slug}`}
+                  className="reveal group block rounded-card border border-border bg-surface p-6 transition-colors hover:border-border-strong hover:bg-surface-2 md:p-7"
                 >
-                  <Link href={`/roles/${role.slug}`}>
-                    <Card hover className="group">
-                      <CardContent className="p-6">
-                        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-                          {/* Main Info */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-2">
-                              <p className="text-body-sm text-accent font-medium">
-                                {role.company}
-                              </p>
-                              {role.featured && (
-                                <Badge variant="accent" size="sm">Featured</Badge>
-                              )}
-                            </div>
-                            <h3 className="text-display-sm font-display font-semibold mb-2 group-hover:text-accent transition-colors">
-                              {role.title}
-                            </h3>
-                            <div className="flex flex-wrap gap-4 text-body-sm text-muted">
-                              <span className="flex items-center gap-1.5">
-                                <MapPin className="w-4 h-4" />
-                                {role.location}
-                              </span>
-                              <span className="flex items-center gap-1.5">
-                                <Briefcase className="w-4 h-4" />
-                                {role.employmentType}
-                              </span>
-                              <span className="flex items-center gap-1.5">
-                                <DollarSign className="w-4 h-4" />
-                                {formatSalary(role.salaryMin, role.salaryMax)}
-                              </span>
-                              <span className="flex items-center gap-1.5">
-                                <Clock className="w-4 h-4" />
-                                {role.postedDate}
-                              </span>
-                            </div>
-                          </div>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                      <span className="label-mono text-accent">{role.company}</span>
+                      {role.featured && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-body-xs text-muted">
+                          <Star className="h-3 w-3 fill-current" aria-hidden /> Featured
+                        </span>
+                      )}
+                    </div>
+                    <ArrowUpRight className="h-5 w-5 shrink-0 text-faint transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+                  </div>
 
-                          {/* Tags */}
-                          <div className="flex flex-wrap gap-2 lg:justify-end">
-                            {role.tags.slice(0, 4).map((tag) => (
-                              <Badge key={tag} variant="secondary" size="sm">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                </motion.div>
+                  <h2 className="mt-2 text-display-sm text-ink transition-colors group-hover:text-accent">
+                    {role.title}
+                  </h2>
+
+                  <p className="mt-3 max-w-2xl line-clamp-2 text-body-md text-muted text-pretty">
+                    {role.overview}
+                  </p>
+
+                  <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-body-sm text-muted">
+                    <span className="inline-flex items-center gap-1.5">
+                      <MapPin className="h-4 w-4 text-faint" aria-hidden /> {role.location}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <Briefcase className="h-4 w-4 text-faint" aria-hidden />
+                      {getEmploymentTypeLabel(role.employmentType)}
+                    </span>
+                    <span className="font-mono text-ink">
+                      {formatSalary(role.salaryMin, role.salaryMax)}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-faint">
+                      <Clock className="h-4 w-4" aria-hidden /> Posted {formatDateShort(role.postedDate)}
+                    </span>
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {role.tags.slice(0, 4).map((tag) => (
+                      <Badge key={tag} variant="secondary" size="sm">
+                        {tag}
+                      </Badge>
+                    ))}
+                    {role.tags.length > 4 && (
+                      <span className="self-center font-mono text-body-xs text-faint">
+                        +{role.tags.length - 4}
+                      </span>
+                    )}
+                  </div>
+                </Link>
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <p className="text-display-sm font-display font-semibold mb-2">
-                No roles found
+            <div className="mx-auto max-w-md rounded-card border border-border bg-surface px-6 py-16 text-center">
+              <p className="label-mono text-faint">No matches</p>
+              <h2 className="mt-4 text-display-sm text-ink text-balance">
+                Nothing open on those terms &mdash; yet.
+              </h2>
+              <p className="mt-3 text-body-md text-muted text-pretty">
+                Loosen the filters, or tell us what you&rsquo;re after and we&rsquo;ll reach
+                out when the right search opens.
               </p>
-              <p className="text-body-md text-muted mb-6">
-                Try adjusting your search or filters to find what you&apos;re looking for.
-              </p>
-              <Button variant="outline" onClick={clearFilters}>
-                Clear all filters
-              </Button>
+              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                <Button variant="outline" onClick={clearFilters}>
+                  Clear filters
+                </Button>
+                <ButtonLink href="/contact">Register your interest</ButtonLink>
+              </div>
             </div>
           )}
         </Container>
-      </Section>
+      </section>
     </>
   )
 }

@@ -1,76 +1,60 @@
-'use client'
-
 import Link from 'next/link'
 import { Container } from './ui/container'
-import { Divider } from './ui/divider'
+import { Logo } from './ui/logo'
 import { siteConfig, navigation } from '@/content'
-import { ArrowUpRight, Linkedin, Twitter, Mail } from 'lucide-react'
+import { ArrowUpRight, Mail } from 'lucide-react'
+import { Linkedin, Twitter } from './ui/social-icons'
+
+const socials = [
+  { label: 'LinkedIn', href: siteConfig.social.linkedin, Icon: Linkedin },
+  { label: 'X', href: siteConfig.social.twitter, Icon: Twitter },
+  { label: 'Email', href: `mailto:${siteConfig.contact.email}`, Icon: Mail },
+]
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-background border-t border-border">
-      <Container className="py-16 lg:py-24">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
-          {/* Brand Column */}
-          <div className="lg:col-span-4 space-y-6">
-            <Link
-              href="/"
-              className="text-2xl font-display font-bold text-foreground"
-            >
-              {siteConfig.name}
+    <footer className="border-t border-border bg-bg">
+      <Container className="py-16 lg:py-20">
+        <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-8">
+          <div className="lg:col-span-5">
+            <Link href="/" aria-label="Stem Connect — home">
+              <Logo />
             </Link>
-            <p className="text-body-md text-muted max-w-sm">
+            <p className="mt-6 max-w-sm text-body-md text-muted text-pretty">
               {siteConfig.tagline}
             </p>
-            <div className="flex items-center gap-4">
-              <a
-                href={siteConfig.social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 text-muted hover:text-accent transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a
-                href={siteConfig.social.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 text-muted hover:text-accent transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href={`mailto:${siteConfig.contact.email}`}
-                className="p-2 text-muted hover:text-accent transition-colors"
-                aria-label="Email"
-              >
-                <Mail className="w-5 h-5" />
-              </a>
+            <div className="mt-8 flex items-center gap-2">
+              {socials.map(({ label, href, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target={href.startsWith('http') ? '_blank' : undefined}
+                  rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  className="grid h-10 w-10 place-items-center rounded-full border border-border text-muted transition-colors hover:border-border-strong hover:text-accent"
+                  aria-label={label}
+                >
+                  <Icon className="h-[18px] w-[18px]" />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Navigation Columns */}
-          <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:col-span-7">
             {navigation.footer.map((section) => (
-              <div key={section.title} className="space-y-4">
-                <h4 className="text-body-sm font-semibold text-foreground uppercase tracking-wider">
-                  {section.title}
-                </h4>
-                <ul className="space-y-3">
+              <div key={section.title}>
+                <h4 className="label-mono">{section.title}</h4>
+                <ul className="mt-5 space-y-3">
                   {section.links.map((link, index) => (
                     <li key={`${section.title}-${link.label}-${index}`}>
                       <Link
                         href={link.href}
-                        className="text-body-sm text-muted hover:text-foreground transition-colors inline-flex items-center gap-1 group"
+                        className="group inline-flex items-center gap-1 text-body-sm text-muted transition-colors hover:text-ink"
                       >
                         {link.label}
                         {link.href.startsWith('http') && (
-                          <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-0.5 translate-x-0.5 group-hover:opacity-100 transition-all" />
+                          <ArrowUpRight className="h-3 w-3 -translate-y-px opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
                         )}
                       </Link>
                     </li>
@@ -81,25 +65,22 @@ export function Footer() {
           </div>
         </div>
 
-        <Divider className="my-12" />
-
-        {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-body-sm text-muted">
-            &copy; {currentYear} {siteConfig.name}. All rights reserved.
+        <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-border pt-8 md:flex-row md:items-center">
+          <p className="text-body-sm text-faint">
+            &copy; {currentYear} {siteConfig.name}. Toronto · Canada.
           </p>
           <div className="flex items-center gap-6">
             <Link
               href="/privacy"
-              className="text-body-sm text-muted hover:text-foreground transition-colors"
+              className="text-body-sm text-faint transition-colors hover:text-ink"
             >
-              Privacy Policy
+              Privacy
             </Link>
             <Link
               href="/terms"
-              className="text-body-sm text-muted hover:text-foreground transition-colors"
+              className="text-body-sm text-faint transition-colors hover:text-ink"
             >
-              Terms of Service
+              Terms
             </Link>
           </div>
         </div>

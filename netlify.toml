@@ -1,0 +1,22 @@
+# Netlify deploy config — Next.js 16 static export.
+# The build writes fully static HTML/CSS/JS to `dist/` (see next.config.ts:
+# output: 'export', distDir: 'dist'), which Netlify serves directly. No
+# Next.js runtime/adapter is needed.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Long-cache the fingerprinted static assets.
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"

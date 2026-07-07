@@ -1,248 +1,305 @@
 'use client'
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { MapPin, Mail, Phone, Linkedin, Twitter, Send, Check } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { ArrowRight, Check, Clock } from 'lucide-react'
+import { Linkedin, Twitter } from '@/components/ui/social-icons'
 import { Container } from '@/components/ui/container'
 import { Section } from '@/components/ui/section'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectItem } from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
+import { Reveal } from '@/components/ui/reveal'
+import { cn } from '@/lib/utils'
 import { siteConfig } from '@/content'
 
-const inquiryTypes = [
-  { value: 'employer', label: "I'm looking to hire" },
-  { value: 'candidate', label: "I'm looking for a job" },
-  { value: 'partnership', label: 'Partnership inquiry' },
-  { value: 'other', label: 'Something else' },
-]
+const intents = [
+  {
+    value: 'hiring',
+    label: "I'm hiring",
+    hint: 'Start a search',
+  },
+  {
+    value: 'looking',
+    label: "I'm looking",
+    hint: 'Explore roles',
+  },
+] as const
+
+const contactSchema = z.object({
+  intent: z.enum(['hiring', 'looking'], {
+    message: 'Tell us which one applies.',
+  }),
+  firstName: z.string().trim().min(1, 'First name is required.'),
+  lastName: z.string().trim().min(1, 'Last name is required.'),
+  email: z.string().trim().min(1, 'Email is required.').email('Enter a valid email.'),
+  company: z.string().trim().optional(),
+  message: z
+    .string()
+    .trim()
+    .min(10, 'A sentence or two helps us route you to the right person.'),
+})
+
+type ContactValues = z.infer<typeof contactSchema>
 
 export default function ContactPage() {
-  const [inquiryType, setInquiryType] = useState('')
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors, isSubmitting, isSubmitSuccessful },
+  } = useForm<ContactValues>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: { intent: undefined, firstName: '', lastName: '', email: '', company: '', message: '' },
+  })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // In a real app, this would submit to an API
-    setIsSubmitted(true)
+  const intent = watch('intent')
+
+  // No backend: static-export site. We validate client-side and show a
+  // success state. `onSubmit` never touches a server.
+  const onSubmit = async () => {
+    await new Promise((r) => setTimeout(r, 400))
   }
 
   return (
     <>
-      {/* Hero */}
-      <Section className="pt-32 pb-16 bg-surface">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl"
-          >
-            <Badge variant="accent" className="mb-4">
-              Contact Us
-            </Badge>
-            <h1 className="text-display-xl md:text-display-2xl font-display font-bold mb-6">
-              Let&apos;s start a conversation
-            </h1>
-            <p className="text-body-lg text-muted">
-              Whether you&apos;re looking to hire, searching for your next role, or just want
-              to learn more about what we do, we&apos;d love to hear from you.
-            </p>
-          </motion.div>
+      {/* ---------------------------------------------------------------- Hero */}
+      <section className="relative overflow-hidden pt-32 pb-14 md:pt-40 md:pb-20">
+        <div className="bg-grid mask-fade-b pointer-events-none absolute inset-0 opacity-50" aria-hidden />
+        <Container className="relative">
+          <div className="max-w-3xl">
+            <Reveal>
+              <Label tick>Contact</Label>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <h1 className="mt-6 text-display-2xl text-ink text-balance">
+                Start a real conversation.
+              </h1>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="mt-7 max-w-2xl text-body-lg text-muted text-pretty md:text-body-xl">
+                Hiring a critical role or weighing your next move — tell us which
+                and a few details. A real person replies within one business day.
+                No auto-responders, no keyword screens.
+              </p>
+            </Reveal>
+          </div>
         </Container>
-      </Section>
+      </section>
 
-      {/* Contact Form & Info */}
-      <Section>
+      {/* ---------------------------------------------------------------- Form + rail */}
+      <Section padding="default" className="pt-4 md:pt-6">
         <Container>
-          <div className="grid lg:grid-cols-3 gap-12">
-            {/* Contact Form */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="lg:col-span-2"
-            >
-              <Card>
-                <CardContent className="p-8">
-                  {isSubmitted ? (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-6">
-                        <Check className="w-8 h-8 text-accent" />
-                      </div>
-                      <h2 className="text-display-sm font-display font-semibold mb-2">
-                        Message sent!
-                      </h2>
-                      <p className="text-body-md text-muted mb-6">
-                        Thanks for reaching out. We&apos;ll get back to you within 24 hours.
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+            {/* Form */}
+            <div className="lg:col-span-7">
+              {isSubmitSuccessful ? (
+                <div className="rounded-card border border-border bg-surface p-8 md:p-10">
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-ink">
+                    <Check className="h-6 w-6" strokeWidth={2.5} />
+                  </span>
+                  <h2 className="mt-6 text-display-sm font-semibold text-ink">
+                    Message received.
+                  </h2>
+                  <p className="mt-3 max-w-md text-body-md text-muted text-pretty">
+                    Thanks for reaching out. Expect a reply from a real person on
+                    our team within one business day.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="mt-8"
+                    onClick={() => reset()}
+                  >
+                    Send another message
+                  </Button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8">
+                  {/* Intent — two clear paths */}
+                  <fieldset>
+                    <legend className="text-body-sm font-medium text-ink">
+                      What brings you here?
+                    </legend>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      {intents.map((opt) => {
+                        const selected = intent === opt.value
+                        return (
+                          <label
+                            key={opt.value}
+                            className={cn(
+                              'flex cursor-pointer items-center justify-between gap-3 rounded-card border bg-surface px-4 py-3.5 transition-colors',
+                              selected
+                                ? 'border-border-strong bg-surface-2'
+                                : 'border-border hover:border-border-strong'
+                            )}
+                          >
+                            <input
+                              type="radio"
+                              value={opt.value}
+                              className="sr-only"
+                              {...register('intent')}
+                            />
+                            <span>
+                              <span className="block text-body-md font-medium text-ink">
+                                {opt.label}
+                              </span>
+                              <span className="block text-body-xs text-muted">
+                                {opt.hint}
+                              </span>
+                            </span>
+                            <span
+                              className={cn(
+                                'grid h-5 w-5 shrink-0 place-items-center rounded-full border transition-colors',
+                                selected
+                                  ? 'border-accent bg-accent text-accent-ink'
+                                  : 'border-border-strong'
+                              )}
+                              aria-hidden
+                            >
+                              {selected && <Check className="h-3 w-3" strokeWidth={3} />}
+                            </span>
+                          </label>
+                        )
+                      })}
+                    </div>
+                    {errors.intent && (
+                      <p className="mt-2 text-body-xs text-red-500">
+                        {errors.intent.message}
                       </p>
-                      <Button onClick={() => setIsSubmitted(false)} variant="outline">
-                        Send another message
-                      </Button>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <Select
-                        value={inquiryType}
-                        onValueChange={setInquiryType}
-                        label="What brings you here?"
-                        placeholder="Select an option..."
-                      >
-                        {inquiryTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </Select>
+                    )}
+                  </fieldset>
 
-                      <div className="grid sm:grid-cols-2 gap-6">
-                        <Input label="First Name" name="firstName" required />
-                        <Input label="Last Name" name="lastName" required />
-                      </div>
-
-                      <Input label="Email" name="email" type="email" required />
-
-                      <Input label="Company" name="company" placeholder="Optional" />
-
-                      <Input label="Phone" name="phone" type="tel" placeholder="Optional" />
-
-                      <Textarea
-                        label="Message"
-                        name="message"
-                        rows={5}
-                        placeholder="Tell us how we can help..."
-                        required
-                      />
-
-                      <div className="pt-4">
-                        <Button type="submit" size="lg" className="w-full sm:w-auto">
-                          Send Message
-                          <Send className="w-5 h-5" />
-                        </Button>
-                      </div>
-                    </form>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Contact Info */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="space-y-6"
-            >
-              {/* Address */}
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-                      <MapPin className="w-5 h-5 text-accent" />
-                    </div>
-                    <div>
-                      <h3 className="text-display-xs font-display font-semibold mb-1">
-                        Office
-                      </h3>
-                      <p className="text-body-md text-muted">{siteConfig.contact.address}</p>
-                    </div>
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    <Input
+                      label="First name"
+                      autoComplete="given-name"
+                      error={errors.firstName?.message}
+                      {...register('firstName')}
+                    />
+                    <Input
+                      label="Last name"
+                      autoComplete="family-name"
+                      error={errors.lastName?.message}
+                      {...register('lastName')}
+                    />
                   </div>
-                </CardContent>
-              </Card>
 
-              {/* Email */}
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-                      <Mail className="w-5 h-5 text-accent" />
-                    </div>
-                    <div>
-                      <h3 className="text-display-xs font-display font-semibold mb-1">
-                        Email
-                      </h3>
+                  <Input
+                    label="Email"
+                    type="email"
+                    autoComplete="email"
+                    error={errors.email?.message}
+                    {...register('email')}
+                  />
+
+                  <Input
+                    label="Company"
+                    placeholder="Optional"
+                    autoComplete="organization"
+                    error={errors.company?.message}
+                    {...register('company')}
+                  />
+
+                  <Textarea
+                    label="Message"
+                    rows={5}
+                    placeholder={
+                      intent === 'looking'
+                        ? 'What kind of role are you looking for, and what would make it worth the move?'
+                        : 'What are you hiring for, and what does great look like?'
+                    }
+                    error={errors.message?.message}
+                    {...register('message')}
+                  />
+
+                  <div className="pt-2">
+                    <Button type="submit" size="lg" disabled={isSubmitting}>
+                      {isSubmitting ? 'Sending…' : 'Send message'}
+                      {!isSubmitting && <ArrowRight className="h-5 w-5" />}
+                    </Button>
+                    <p className="mt-4 text-body-xs text-faint">
+                      By reaching out you agree we can contact you about your
+                      inquiry. We never share your details.
+                    </p>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* Rail */}
+            <aside className="lg:col-span-5 lg:pl-4">
+              <div className="rounded-card border border-border bg-surface p-6 md:p-8">
+                <div className="flex items-center gap-2.5 text-accent">
+                  <Clock className="h-4 w-4" />
+                  <span className="text-body-sm font-medium text-ink">
+                    Reply within one business day
+                  </span>
+                </div>
+                <p className="mt-3 text-body-sm text-muted text-pretty">
+                  Every serious inquiry gets a real response — often the same day.
+                  Prefer to skip the form? Reach us directly.
+                </p>
+
+                <dl className="mt-8 space-y-6 border-t border-border pt-8">
+                  <div>
+                    <dt className="label-mono">Email</dt>
+                    <dd className="mt-1.5">
                       <a
                         href={`mailto:${siteConfig.contact.email}`}
-                        className="text-body-md text-accent hover:text-accent/80 transition-colors"
+                        className="link-underline font-mono text-body-sm text-ink hover:text-accent"
                       >
                         {siteConfig.contact.email}
                       </a>
-                    </div>
+                    </dd>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Phone */}
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-                      <Phone className="w-5 h-5 text-accent" />
-                    </div>
-                    <div>
-                      <h3 className="text-display-xs font-display font-semibold mb-1">
-                        Phone
-                      </h3>
+                  <div>
+                    <dt className="label-mono">Phone</dt>
+                    <dd className="mt-1.5">
                       <a
-                        href={`tel:${siteConfig.contact.phone}`}
-                        className="text-body-md text-accent hover:text-accent/80 transition-colors"
+                        href={`tel:${siteConfig.contact.phone.replace(/[^\d+]/g, '')}`}
+                        className="link-underline font-mono text-body-sm text-ink hover:text-accent"
                       >
                         {siteConfig.contact.phone}
                       </a>
-                    </div>
+                    </dd>
                   </div>
-                </CardContent>
-              </Card>
+                  <div>
+                    <dt className="label-mono">Based in</dt>
+                    <dd className="mt-1.5 font-mono text-body-sm text-ink">
+                      {siteConfig.contact.address}
+                    </dd>
+                  </div>
+                </dl>
 
-              {/* Social */}
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-display-xs font-display font-semibold mb-4">
-                    Follow Us
-                  </h3>
-                  <div className="flex items-center gap-4">
+                <div className="mt-8 border-t border-border pt-8">
+                  <span className="label-mono">Follow</span>
+                  <div className="mt-3 flex items-center gap-3">
                     <a
                       href={siteConfig.social.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-lg bg-surface-elevated flex items-center justify-center text-muted hover:text-accent hover:bg-accent/10 transition-colors"
-                      aria-label="LinkedIn"
+                      aria-label="Stem Connect on LinkedIn"
+                      className="grid h-10 w-10 place-items-center rounded-full border border-border bg-bg text-muted transition-colors hover:border-border-strong hover:text-ink"
                     >
-                      <Linkedin className="w-5 h-5" />
+                      <Linkedin className="h-4 w-4" />
                     </a>
                     <a
                       href={siteConfig.social.twitter}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-lg bg-surface-elevated flex items-center justify-center text-muted hover:text-accent hover:bg-accent/10 transition-colors"
-                      aria-label="Twitter"
+                      aria-label="Stem Connect on X"
+                      className="grid h-10 w-10 place-items-center rounded-full border border-border bg-bg text-muted transition-colors hover:border-border-strong hover:text-ink"
                     >
-                      <Twitter className="w-5 h-5" />
+                      <Twitter className="h-4 w-4" />
                     </a>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Hours */}
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-display-xs font-display font-semibold mb-4">
-                    Office Hours
-                  </h3>
-                  <div className="space-y-2 text-body-md">
-                    <div className="flex justify-between">
-                      <span className="text-muted">Monday - Friday</span>
-                      <span className="text-foreground">9:00 AM - 6:00 PM</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted">Saturday - Sunday</span>
-                      <span className="text-foreground">Closed</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+                </div>
+              </div>
+            </aside>
           </div>
         </Container>
       </Section>

@@ -16,12 +16,13 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center font-medium rounded-full',
+        'inline-flex items-center font-medium rounded-full whitespace-nowrap',
         {
-          'bg-surface text-foreground': variant === 'default',
-          'bg-accent/10 text-accent': variant === 'accent',
+          'bg-surface-2 text-ink': variant === 'default',
+          'bg-accent/12 text-accent ring-1 ring-inset ring-accent/25':
+            variant === 'accent',
           'border border-border text-muted': variant === 'outline',
-          'bg-surface-elevated text-muted': variant === 'secondary',
+          'bg-surface text-muted': variant === 'secondary',
         },
         {
           'px-3 py-1 text-body-xs': size === 'default',

@@ -1,187 +1,163 @@
-'use client'
-
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Clock, ArrowRight, User } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Container } from '@/components/ui/container'
 import { Section } from '@/components/ui/section'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
+import { ButtonLink } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Reveal } from '@/components/ui/reveal'
 import { insights } from '@/content'
 import { formatDate } from '@/lib/utils'
 
+export const metadata = {
+  title: 'Insights — Stem Connect',
+  description:
+    'Field notes on Canadian tech hiring: compensation data, market outlooks, and practical advice for candidates and hiring teams.',
+}
+
 export default function InsightsPage() {
-  const featuredPost = insights[0]
-  const otherPosts = insights.slice(1)
+  const [lead, ...rest] = insights
 
   return (
     <>
-      {/* Hero */}
-      <Section className="pt-32 pb-16 bg-surface">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl"
-          >
-            <Badge variant="accent" className="mb-4">
-              Insights
-            </Badge>
-            <h1 className="text-display-xl md:text-display-2xl font-display font-bold mb-6">
-              Thoughts on Toronto&apos;s tech landscape
+      {/* ---------------------------------------------------------------- Header */}
+      <section className="relative overflow-hidden border-b border-border bg-surface pt-32 pb-16 md:pt-40 md:pb-20">
+        <div className="bg-grid mask-fade-b pointer-events-none absolute inset-0 opacity-50" aria-hidden />
+        <Container className="relative">
+          <Reveal className="max-w-3xl">
+            <Label tick>Field notes · Canadian tech hiring</Label>
+            <h1 className="mt-6 text-display-xl md:text-display-2xl text-ink text-balance">
+              What we&apos;re seeing in the market.
             </h1>
-            <p className="text-body-lg text-muted">
-              Market trends, career advice, and insights from the front lines of Toronto&apos;s
-              tech recruiting scene.
+            <p className="mt-6 max-w-2xl text-body-lg text-muted text-pretty md:text-body-xl">
+              Compensation data, hiring outlooks, and hard-won advice &mdash;
+              written by the people running the searches, not a content team.
             </p>
-          </motion.div>
+          </Reveal>
+        </Container>
+      </section>
+
+      {/* ---------------------------------------------------------------- Featured lead */}
+      <Section padding="default">
+        <Container>
+          <Reveal>
+            <Link
+              href={`/insights/${lead.slug}`}
+              className="group block rounded-card border border-border bg-surface p-8 transition-[border-color,background-color] duration-300 hover:border-border-strong hover:bg-surface-2 md:p-12"
+            >
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <span className="label-mono text-accent">{lead.category}</span>
+                <span className="label-mono text-faint">
+                  Latest &middot; {lead.readTime}
+                </span>
+              </div>
+
+              <h2 className="mt-6 max-w-3xl text-display-lg text-ink text-balance transition-colors group-hover:text-accent">
+                {lead.title}
+              </h2>
+
+              <p className="mt-5 max-w-2xl text-body-lg text-muted text-pretty">
+                {lead.excerpt}
+              </p>
+
+              <div className="mt-9 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+                <span className="text-body-sm text-muted">
+                  {lead.author}
+                  <span className="text-faint"> &middot; {formatDate(lead.publishedAt)}</span>
+                </span>
+                <span className="inline-flex items-center gap-2 text-body-sm font-semibold text-ink transition-colors group-hover:text-accent">
+                  Read article
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </span>
+              </div>
+            </Link>
+          </Reveal>
         </Container>
       </Section>
 
-      {/* Featured Post */}
-      <Section className="py-8">
+      {/* ---------------------------------------------------------------- The rest */}
+      <Section background="surface" padding="default">
         <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <Link href={`/insights/${featuredPost.slug}`}>
-              <Card hover className="overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="grid md:grid-cols-2">
-                    {/* Image placeholder */}
-                    <div className="aspect-video md:aspect-auto md:h-full bg-surface-elevated flex items-center justify-center">
-                      <span className="text-6xl">{featuredPost.category === 'Market Insights' ? '📊' : featuredPost.category === 'Career Advice' ? '💡' : '🚀'}</span>
-                    </div>
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-xl">
+              <Label tick>More reading</Label>
+              <h2 className="mt-4 text-display-md md:text-display-lg text-ink text-balance">
+                Everything else worth your time.
+              </h2>
+            </div>
+            <ButtonLink href="/contact" variant="secondary" size="sm">
+              Talk to us
+              <ArrowRight className="h-4 w-4" />
+            </ButtonLink>
+          </div>
 
-                    {/* Content */}
-                    <div className="p-8 md:p-10">
-                      <div className="flex items-center gap-3 mb-4">
-                        <Badge variant="accent">{featuredPost.category}</Badge>
-                        <Badge variant="secondary">Featured</Badge>
-                      </div>
-
-                      <h2 className="text-display-md md:text-display-lg font-display font-bold mb-4 group-hover:text-accent transition-colors">
-                        {featuredPost.title}
-                      </h2>
-
-                      <p className="text-body-md text-muted mb-6 line-clamp-3">
-                        {featuredPost.excerpt}
-                      </p>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-                            <User className="w-5 h-5 text-accent" />
-                          </div>
-                          <div>
-                            <p className="text-body-sm font-medium text-foreground">
-                              {featuredPost.author}
-                            </p>
-                            <p className="text-body-xs text-muted">
-                              {formatDate(featuredPost.publishedAt)}
-                            </p>
-                          </div>
-                        </div>
-                        <span className="flex items-center gap-1 text-body-sm text-muted">
-                          <Clock className="w-4 h-4" />
-                          {featuredPost.readTime}
-                        </span>
-                      </div>
+          <div className="mt-12 divide-y divide-border border-y border-border">
+            {rest.map((post) => (
+              <Reveal key={post.id}>
+                <Link
+                  href={`/insights/${post.slug}`}
+                  className="group grid grid-cols-1 items-baseline gap-x-8 gap-y-3 py-8 md:grid-cols-12"
+                >
+                  <div className="md:col-span-3">
+                    <div className="label-mono text-faint">{post.category}</div>
+                    <div className="mt-2 hidden font-mono text-body-xs text-faint md:block">
+                      {formatDate(post.publishedAt)} · {post.readTime}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </Link>
-          </motion.div>
-        </Container>
-      </Section>
 
-      {/* Other Posts */}
-      <Section>
-        <Container>
-          <h2 className="text-display-sm font-display font-semibold mb-8">
-            Latest Articles
-          </h2>
+                  <div className="md:col-span-8">
+                    <h3 className="text-display-sm font-semibold text-ink transition-colors group-hover:text-accent">
+                      {post.title}
+                    </h3>
+                    <p className="mt-2 max-w-2xl text-body-md text-muted text-pretty">
+                      {post.excerpt}
+                    </p>
+                    <div className="mt-3 text-body-xs text-faint md:hidden">
+                      {post.author} · {post.readTime}
+                    </div>
+                    <div className="mt-3 hidden text-body-xs text-faint md:block">
+                      {post.author}
+                    </div>
+                  </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {otherPosts.map((post, index) => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link href={`/insights/${post.slug}`}>
-                  <Card hover className="h-full">
-                    <CardContent className="p-0">
-                      {/* Image placeholder */}
-                      <div className="aspect-video bg-surface-elevated flex items-center justify-center">
-                        <span className="text-4xl">{post.category === 'Market Insights' ? '📊' : post.category === 'Career Advice' ? '💡' : '🚀'}</span>
-                      </div>
-
-                      <div className="p-6">
-                        <Badge variant="secondary" size="sm" className="mb-3">
-                          {post.category}
-                        </Badge>
-
-                        <h3 className="text-display-xs font-display font-semibold mb-2 line-clamp-2">
-                          {post.title}
-                        </h3>
-
-                        <p className="text-body-sm text-muted mb-4 line-clamp-2">
-                          {post.excerpt}
-                        </p>
-
-                        <div className="flex items-center justify-between text-body-xs text-muted">
-                          <span>{post.author}</span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />
-                            {post.readTime}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div className="flex justify-end md:col-span-1">
+                    <ArrowUpRight className="h-5 w-5 text-faint transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />
+                  </div>
                 </Link>
-              </motion.div>
+              </Reveal>
             ))}
           </div>
         </Container>
       </Section>
 
-      {/* Newsletter CTA */}
-      <Section className="bg-surface">
+      {/* ---------------------------------------------------------------- CTA */}
+      <Section padding="default">
         <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center max-w-2xl mx-auto"
-          >
-            <h2 className="text-display-lg font-display font-bold mb-4">
-              Stay in the loop
-            </h2>
-            <p className="text-body-lg text-muted mb-8">
-              Get the latest insights on Toronto&apos;s tech job market delivered to your inbox.
-              No spam, just useful stuff.
-            </p>
-            <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder:text-muted/50 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/50"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 bg-accent text-background font-medium rounded-lg hover:bg-accent/90 transition-colors"
-              >
-                Subscribe
-              </button>
-            </form>
-          </motion.div>
+          <Reveal className="relative overflow-hidden rounded-card border border-border bg-surface px-6 py-16 md:px-16 md:py-20">
+            <div className="bg-grid mask-fade-b pointer-events-none absolute inset-0 opacity-40" aria-hidden />
+            <div
+              className="pointer-events-none absolute -bottom-32 -right-16 h-96 w-96 rounded-full opacity-[0.14] blur-[110px]"
+              style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 65%)' }}
+              aria-hidden
+            />
+            <div className="relative max-w-2xl">
+              <h2 className="text-display-lg text-ink text-balance">
+                Reading the market is one thing. Moving in it is another.
+              </h2>
+              <p className="mt-5 text-body-lg text-muted text-pretty">
+                Hiring or looking &mdash; start with a real conversation. We reply
+                to every serious inquiry within one business day.
+              </p>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <ButtonLink href="/contact" size="lg">
+                  Start a conversation
+                  <ArrowRight className="h-5 w-5" />
+                </ButtonLink>
+                <ButtonLink href="/roles" variant="secondary" size="lg">
+                  Browse roles
+                </ButtonLink>
+              </div>
+            </div>
+          </Reveal>
         </Container>
       </Section>
     </>
