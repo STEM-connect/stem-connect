@@ -11,14 +11,14 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="space-y-2">
         {label && (
-          <label className="block text-body-sm font-medium text-foreground">
+          <label className="block text-body-sm font-medium text-ink">
             {label}
           </label>
         )}
         <textarea
           className={cn(
-            'w-full px-4 py-3 bg-surface border border-border rounded-lg text-foreground placeholder:text-muted/50 transition-colors resize-none',
-            'focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/50',
+            'w-full px-4 py-3 bg-surface border border-border rounded-lg text-ink placeholder:text-faint transition-colors resize-none',
+            'focus:outline-none focus:border-accent/70 focus:ring-1 focus:ring-accent/40',
             'disabled:opacity-50 disabled:cursor-not-allowed',
             error && 'border-red-500 focus:border-red-500 focus:ring-red-500/50',
             className

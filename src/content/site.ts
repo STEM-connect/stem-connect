@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: 'Stem Connect',
-  tagline: 'Canada\'s Premier Tech Recruiting Partner',
-  description: 'Stem Connect connects exceptional tech talent with innovative companies across Canada. Headquartered in Toronto, we specialize in Product, Design, Engineering, Data, and Go-to-Market roles throughout the GTA and nationwide.',
+  tagline: 'Boutique tech recruiting for Canada — built on signal, not volume.',
+  description: 'Stem Connect is a boutique Canadian tech recruiting firm. We place senior Product, Design, Engineering, Data, and Go-to-Market talent with startups and scale-ups across Toronto, the GTA, and the rest of Canada — matched on craft, not keyword.',
   url: 'https://www.stemconnect.ca',
 
   contact: {

@@ -1,185 +1,188 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Container } from '@/components/ui/container'
 import { Section } from '@/components/ui/section'
 import { ButtonLink } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Divider } from '@/components/ui/divider'
+import { Label } from '@/components/ui/label'
+import { Reveal } from '@/components/ui/reveal'
+import { SpecialtyIcon } from '@/components/ui/specialty-icon'
 import { specialties, roles } from '@/content'
 
 export default function SpecialtiesPage() {
-  const getRoleCountBySpecialty = (specialtyName: string) =>
-    roles.filter((role) => role.specialty === specialtyName).length
+  const openBySlug = (slug: string) =>
+    roles.filter((r) => r.specialty === slug).length
 
   return (
     <>
-      {/* Hero */}
-      <Section className="pt-32 pb-16 bg-surface">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl"
-          >
-            <Badge variant="accent" className="mb-4">
-              Our Specialties
-            </Badge>
-            <h1 className="text-display-xl md:text-display-2xl font-display font-bold mb-6">
-              Deep expertise across tech&apos;s core functions
+      {/* ---------------------------------------------------------------- Hero */}
+      <section className="relative overflow-hidden pt-32 pb-16 md:pt-40 md:pb-20">
+        <div className="bg-grid mask-fade-b pointer-events-none absolute inset-0 opacity-50" aria-hidden />
+        <div
+          className="pointer-events-none absolute -right-40 -top-24 h-[34rem] w-[34rem] rounded-full opacity-[0.10] blur-[120px]"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 65%)' }}
+          aria-hidden
+        />
+        <Container className="relative">
+          <div className="max-w-3xl">
+            <Reveal y={12}>
+              <Label tick>Where we go deep</Label>
+            </Reveal>
+            <h1
+              className="rise-in mt-6 text-display-xl md:text-display-2xl text-ink text-balance"
+            >
+              Five disciplines. One market we
+              <br className="hidden sm:block" /> know <span className="text-accent">cold</span>.
             </h1>
-            <p className="text-body-lg text-muted">
-              We don&apos;t try to be everything to everyone. Instead, we&apos;ve built deep
-              expertise in the roles that matter most at growth-stage tech companies.
+            <p
+              className="rise-in rise-in-d1 mt-7 max-w-xl text-body-lg text-muted text-pretty md:text-body-xl"
+            >
+              We don&apos;t recruit for everything. We go deep on the five functions
+              that decide whether a tech company ships &mdash; and we know the
+              Canadian talent in each of them by name.
             </p>
-          </motion.div>
-        </Container>
-      </Section>
-
-      {/* Specialties Grid */}
-      <Section>
-        <Container>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {specialties.map((specialty, index) => {
-              const roleCount = getRoleCountBySpecialty(specialty.name)
-              const specialtyRoles = roles
-                .filter((role) => role.specialty === specialty.name)
-                .slice(0, 2)
-
-              return (
-                <motion.div
-                  key={specialty.id}
-                  id={specialty.slug}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="scroll-mt-32"
-                >
-                  <Card className="h-full">
-                    <CardContent className="p-6">
-                      {/* Header */}
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-                          <span className="text-2xl">{specialty.icon}</span>
-                        </div>
-                        <div>
-                          <h2 className="text-display-sm font-display font-bold">
-                            {specialty.name}
-                          </h2>
-                          {roleCount > 0 && (
-                            <p className="text-body-sm text-accent font-medium">
-                              {roleCount} open position{roleCount !== 1 ? 's' : ''}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Description */}
-                      <p className="text-body-md text-muted mb-6">
-                        {specialty.shortDescription}
-                      </p>
-
-                      {/* Roles We Place */}
-                      <div className="mb-6">
-                        <h3 className="text-body-sm font-semibold text-foreground mb-3">
-                          Roles We Place
-                        </h3>
-                        <div className="flex flex-wrap gap-1.5">
-                          {specialty.roles.slice(0, 5).map((role) => (
-                            <Badge key={role} variant="secondary" size="sm">
-                              {role}
-                            </Badge>
-                          ))}
-                          {specialty.roles.length > 5 && (
-                            <Badge variant="secondary" size="sm">
-                              +{specialty.roles.length - 5}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Stats */}
-                      <div className="flex gap-6 py-4 border-t border-border mb-6">
-                        <div>
-                          <p className="text-display-xs font-display font-bold text-accent">
-                            {specialty.stats.avgPlacementTime}
-                          </p>
-                          <p className="text-body-xs text-muted">Avg. placement</p>
-                        </div>
-                        <div>
-                          <p className="text-display-xs font-display font-bold text-accent">
-                            {specialty.stats.rolesPlaced}
-                          </p>
-                          <p className="text-body-xs text-muted">Roles placed</p>
-                        </div>
-                      </div>
-
-                      {/* Featured Roles or CTA */}
-                      {specialtyRoles.length > 0 ? (
-                        <div className="space-y-3 mb-4">
-                          {specialtyRoles.map((role) => (
-                            <Link key={role.id} href={`/roles/${role.slug}`}>
-                              <div className="p-3 rounded-lg bg-surface hover:bg-surface-elevated transition-colors">
-                                <p className="text-body-sm font-medium text-foreground">
-                                  {role.title}
-                                </p>
-                                <p className="text-body-xs text-muted">
-                                  {role.company} • {role.location}
-                                </p>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="p-4 rounded-lg bg-surface text-center mb-4">
-                          <p className="text-body-sm text-muted">
-                            No open roles currently—check back soon!
-                          </p>
-                        </div>
-                      )}
-
-                      <ButtonLink
-                        href={`/roles?specialty=${encodeURIComponent(specialty.name)}`}
-                        variant="outline"
-                        className="w-full justify-center"
-                      >
-                        View All {specialty.name} Roles
-                        <ArrowRight className="w-4 h-4" />
-                      </ButtonLink>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              )
-            })}
           </div>
-        </Container>
-      </Section>
 
-      {/* CTA */}
-      <Section className="bg-surface">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center max-w-2xl mx-auto"
+          {/* Jump nav — a real navigational sequence, not scaffolding */}
+          <nav
+            aria-label="Jump to a specialty"
+            className="rise-in rise-in-d2 mt-12 flex flex-wrap gap-2 border-t border-border pt-8"
           >
-            <h2 className="text-display-lg md:text-display-xl font-display font-bold mb-4">
-              Don&apos;t see your specialty?
-            </h2>
-            <p className="text-body-lg text-muted mb-8">
-              We&apos;re always expanding our network. If you&apos;re looking for talent or
-              opportunities outside these areas, let&apos;s talk.
-            </p>
-            <ButtonLink href="/contact" size="lg">
-              Get in Touch
-              <ArrowRight className="w-5 h-5" />
-            </ButtonLink>
-          </motion.div>
+            {specialties.map((s) => (
+              <Link
+                key={s.slug}
+                href={`#${s.slug}`}
+                className="group inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-body-sm text-muted transition-colors hover:border-border-strong hover:bg-surface-2 hover:text-ink"
+              >
+                <SpecialtyIcon name={s.icon} className="h-4 w-4 text-faint transition-colors group-hover:text-accent" />
+                {s.name}
+              </Link>
+            ))}
+          </nav>
+        </Container>
+      </section>
+
+      {/* ---------------------------------------------------------------- Specialties */}
+      {specialties.map((s, i) => {
+        const open = openBySlug(s.slug)
+        const flip = i % 2 === 1
+        return (
+          <Section
+            key={s.id}
+            id={s.slug}
+            background={flip ? 'surface' : 'default'}
+            padding="default"
+            className="scroll-mt-24 border-t border-border"
+          >
+            <Container>
+              <Reveal className="grid gap-x-12 gap-y-10 lg:grid-cols-12 lg:items-start">
+                {/* Identity column */}
+                <div className={flip ? 'lg:order-2 lg:col-span-5' : 'lg:col-span-5'}>
+                  <div className="lg:sticky lg:top-28">
+                    <span className="grid h-14 w-14 place-items-center rounded-card border border-border bg-surface-2 text-ink">
+                      <SpecialtyIcon name={s.icon} className="h-6 w-6" />
+                    </span>
+                    <Label className="mt-6 block">{`Specialty ${i + 1} of ${specialties.length}`}</Label>
+                    <h2 className="mt-3 text-display-lg text-ink text-balance">
+                      {s.name}
+                    </h2>
+
+                    {/* Stats — roles placed is the single lime metric here */}
+                    <dl className="mt-8 grid grid-cols-2 gap-6 border-t border-border pt-8">
+                      <div className="flex flex-col gap-1.5">
+                        <dt className="label-mono order-2">Roles placed</dt>
+                        <dd className="order-1 font-mono text-display-md font-bold tabular-nums text-accent">
+                          {s.stats.rolesPlaced}
+                        </dd>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <dt className="label-mono order-2">Avg. placement</dt>
+                        <dd className="order-1 font-mono text-display-md font-bold tabular-nums text-ink">
+                          {s.stats.avgPlacementTime}
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
+                </div>
+
+                {/* Content column */}
+                <div className={flip ? 'lg:order-1 lg:col-span-7' : 'lg:col-span-7'}>
+                  <p className="max-w-prose text-body-lg text-muted text-pretty">
+                    {s.description}
+                  </p>
+
+                  <div className="mt-10">
+                    <div className="label-mono flex items-center gap-2">
+                      <span className="h-px w-6 bg-border-strong" aria-hidden />
+                      Roles we place
+                    </div>
+                    <ul className="mt-5 flex flex-wrap gap-2">
+                      {s.roles.map((role) => (
+                        <li
+                          key={role}
+                          className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-body-sm text-muted"
+                        >
+                          {role}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-border pt-8">
+                    <Link
+                      href="/roles"
+                      className="group inline-flex items-center gap-2 text-body-sm font-semibold text-ink transition-colors hover:text-accent"
+                    >
+                      {open > 0
+                        ? `${open} open ${s.name} ${open === 1 ? 'role' : 'roles'}`
+                        : `Browse ${s.name} roles`}
+                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </Link>
+                    <Link
+                      href="/employers"
+                      className="link-underline text-body-sm text-muted hover:text-ink"
+                    >
+                      Start a {s.name.toLowerCase()} search
+                    </Link>
+                  </div>
+                </div>
+              </Reveal>
+            </Container>
+          </Section>
+        )
+      })}
+
+      {/* ---------------------------------------------------------------- CTA */}
+      <Section padding="default" className="border-t border-border">
+        <Container>
+          <Reveal className="relative overflow-hidden rounded-card border border-border bg-surface px-6 py-16 md:px-16 md:py-24">
+            <div className="bg-grid mask-fade-b pointer-events-none absolute inset-0 opacity-40" aria-hidden />
+            <div
+              className="pointer-events-none absolute -bottom-32 -right-16 h-96 w-96 rounded-full opacity-[0.14] blur-[110px]"
+              style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 65%)' }}
+              aria-hidden
+            />
+            <div className="relative max-w-2xl">
+              <h2 className="text-display-lg text-ink text-balance">
+                Hiring across the lines? So are we.
+              </h2>
+              <p className="mt-5 text-body-lg text-muted text-pretty">
+                The best hires rarely sit inside one box &mdash; a product-minded
+                engineer, a data-fluent GTM lead. Tell us the shape of the role and
+                we&apos;ll bring the shortlist.
+              </p>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <ButtonLink href="/contact" size="lg">
+                  Start a conversation
+                  <ArrowRight className="h-5 w-5" />
+                </ButtonLink>
+                <ButtonLink href="/roles" variant="secondary" size="lg">
+                  Browse open roles
+                </ButtonLink>
+              </div>
+            </div>
+          </Reveal>
         </Container>
       </Section>
     </>

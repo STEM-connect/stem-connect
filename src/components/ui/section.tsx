@@ -1,7 +1,4 @@
-'use client'
-
 import { cn } from '@/lib/utils'
-import { motion } from 'framer-motion'
 
 interface SectionProps {
   children: React.ReactNode
@@ -23,9 +20,9 @@ export function Section({
       id={id}
       className={cn(
         {
-          'bg-background': background === 'default',
+          'bg-bg': background === 'default',
           'bg-surface': background === 'surface',
-          'bg-surface-elevated': background === 'elevated',
+          'bg-surface-2': background === 'elevated',
         },
         {
           'py-section': padding === 'default',
@@ -42,8 +39,9 @@ export function Section({
 }
 
 interface SectionHeaderProps {
-  title: string
+  title: React.ReactNode
   subtitle?: string
+  kicker?: string
   align?: 'left' | 'center'
   className?: string
 }
@@ -51,29 +49,35 @@ interface SectionHeaderProps {
 export function SectionHeader({
   title,
   subtitle,
+  kicker,
   align = 'left',
   className,
 }: SectionHeaderProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.5 }}
+    <div
       className={cn(
-        'mb-12 md:mb-16',
-        { 'text-center': align === 'center' },
+        'reveal max-w-2xl',
+        align === 'center' && 'mx-auto text-center',
         className
       )}
     >
-      <h2 className="text-display-md md:text-display-lg font-display font-bold text-foreground mb-4">
+      {kicker && (
+        <div
+          className={cn(
+            'label-mono mb-4 flex items-center gap-2',
+            align === 'center' && 'justify-center'
+          )}
+        >
+          <span className="h-px w-6 bg-accent" aria-hidden />
+          {kicker}
+        </div>
+      )}
+      <h2 className="text-display-md md:text-display-lg text-ink text-balance">
         {title}
       </h2>
       {subtitle && (
-        <p className="text-body-lg text-muted max-w-2xl">
-          {subtitle}
-        </p>
+        <p className="mt-5 text-body-lg text-muted text-pretty">{subtitle}</p>
       )}
-    </motion.div>
+    </div>
   )
 }

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { roles } from '@/content'
 import RoleDetailClient from './role-detail-client'
@@ -10,6 +11,22 @@ export function generateStaticParams() {
 
 interface PageProps {
   params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params
+  const role = roles.find((r) => r.slug === slug)
+  if (!role) return {}
+  const title = `${role.title} — ${role.company}`
+  const description = `${role.title} at ${role.company}, ${role.location}. ${role.overview}`.slice(0, 200)
+  const url = `/roles/${role.slug}`
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url, type: 'website' },
+    twitter: { title, description },
+  }
 }
 
 export default async function RoleDetailPage({ params }: PageProps) {

@@ -1,19 +1,24 @@
 import type { Metadata } from 'next'
-import { Inter, Space_Grotesk } from 'next/font/google'
+import { Archivo, JetBrains_Mono } from 'next/font/google'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/Footer'
 import { siteConfig } from '@/content'
 import './globals.css'
 
-const inter = Inter({
+// Archivo carries both display and body — one deliberate family, committed
+// weight/size contrast. Replaces the Space Grotesk + Inter default pairing.
+const archivo = Archivo({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-archivo',
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 })
 
-const spaceGrotesk = Space_Grotesk({
+// JetBrains Mono — high-signal micro-labels, stats, metadata only. Never body.
+const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  variable: '--font-display',
+  variable: '--font-jetbrains',
+  weight: ['400', '500'],
   display: 'swap',
 })
 
@@ -113,7 +118,7 @@ const jsonLd = {
   name: siteConfig.name,
   description: siteConfig.description,
   url: siteConfig.url,
-  logo: `${siteConfig.url}/logo.png`,
+  logo: `${siteConfig.url}/icon.svg`,
   telephone: siteConfig.contact.phone,
   email: siteConfig.contact.email,
   address: {
@@ -142,7 +147,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`${archivo.variable} ${jetbrainsMono.variable}`}>
       <head>
         <script
           type="application/ld+json"

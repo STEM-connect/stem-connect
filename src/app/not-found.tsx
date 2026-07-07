@@ -1,46 +1,59 @@
-'use client'
-
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Home, Search, ArrowLeft } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { Container } from '@/components/ui/container'
-import { Section } from '@/components/ui/section'
 import { ButtonLink } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+
+const paths = [
+  { href: '/', label: 'Home', hint: 'Back to the start' },
+  { href: '/roles', label: 'Open roles', hint: 'See what we’re placing now' },
+  { href: '/contact', label: 'Contact', hint: 'Talk to a real person' },
+]
 
 export default function NotFound() {
   return (
-    <Section className="min-h-[80vh] flex items-center">
-      <Container>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center max-w-2xl mx-auto"
-        >
-          <div className="text-display-3xl md:text-[10rem] font-display font-bold text-accent/20 leading-none mb-4">
+    <section className="relative flex min-h-[80vh] items-center overflow-hidden py-24">
+      <div className="bg-grid mask-fade-b pointer-events-none absolute inset-0 opacity-50" aria-hidden />
+      <Container className="relative">
+        <div className="max-w-2xl">
+          <Label tick>Error 404</Label>
+          <p className="mt-6 font-mono text-display-2xl leading-none text-accent">
             404
-          </div>
-
-          <h1 className="text-display-lg md:text-display-xl font-display font-bold mb-4">
-            Page not found
+          </p>
+          <h1 className="mt-6 text-display-xl text-ink text-balance">
+            This page isn&apos;t in the pipeline.
           </h1>
-
-          <p className="text-body-lg text-muted mb-8">
-            Sorry, we couldn&apos;t find the page you&apos;re looking for. It might have been
-            moved or doesn&apos;t exist.
+          <p className="mt-5 max-w-lg text-body-lg text-muted text-pretty">
+            The link is broken or the page has moved. No dead ends here — pick up
+            one of the paths below.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="mt-10">
             <ButtonLink href="/" size="lg">
-              <Home className="w-5 h-5" />
-              Back to Home
-            </ButtonLink>
-            <ButtonLink href="/roles" variant="outline" size="lg">
-              <Search className="w-5 h-5" />
-              Browse Roles
+              Back to home
             </ButtonLink>
           </div>
-        </motion.div>
+
+          <ul className="mt-12 divide-y divide-border border-y border-border">
+            {paths.map((p) => (
+              <li key={p.href}>
+                <Link
+                  href={p.href}
+                  className="group flex items-center justify-between gap-4 py-5"
+                >
+                  <span className="flex flex-col">
+                    <span className="text-display-sm font-semibold text-ink transition-colors group-hover:text-accent">
+                      {p.label}
+                    </span>
+                    <span className="text-body-sm text-muted">{p.hint}</span>
+                  </span>
+                  <ArrowUpRight className="h-5 w-5 shrink-0 text-faint transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </Container>
-    </Section>
+    </section>
   )
 }
